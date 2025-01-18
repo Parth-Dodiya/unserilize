@@ -1,4 +1,10 @@
+<?php 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
 
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +41,9 @@
     <style>
         textarea.serilized-text {
             min-height: 50px;
-            resize: none;
+            width: -webkit-fill-available;
+    		max-width: 90%;
+/*            resize: none;*/
             overflow: hidden;
             padding: 8px;
             font-size: 16px;
@@ -43,6 +51,7 @@
             border: 1px solid #ccc;
             background: transparent;
             border-radius: 15px;
+            color: #000000;
         }
 
         textarea.text-to-unserilize:focus, button:focus {
@@ -51,9 +60,9 @@
         }
     </style>
     <style type="text/css">
-        body {
+        /*body {
             background-color: #31363F;
-        }
+        }*/
         div.main {
             font-family: "DM Sans", sans-serif;
             max-width: 1184px;
@@ -65,6 +74,7 @@
             align-items: center;
             /* min-height: 100vh; */
             line-height: normal;
+            color: #000000;
         }
 
         @media only screen and (max-width: 1023px) {
@@ -92,7 +102,7 @@
 
         .fhs-heading {
             text-align: center;
-            color: #EEEEEE;
+            color: #000000;
             margin-bottom: 30px;
             font-size: 30px;
         }
@@ -130,17 +140,18 @@
 
         .fhs-button {
             padding: 10px 20px;
+            font-weight: bold;
             border: none;
             font-size: 16px;
-            background-color: #31363F;
-            color: #EEEEEE;
+            background-color: red;
+            color: #ffffff;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         .fhs-button:hover {
-            background-color: #EEEEEE;
+            background-color: #000000;
             color: #31363F;
         }
 
@@ -162,7 +173,7 @@
         }
         .fhs-copy {
             background-color: #31363F;
-            color: #EEEEEE;
+            color: #000000;
             border: none;
             padding: 10px 20px;
             border-radius: 4px;
@@ -172,7 +183,7 @@
         }
 
         .fhs-copy:hover {
-            background-color: #EEEEEE;
+            background-color: #000000;
             color: #31363F;
         }
 
@@ -199,7 +210,7 @@
             margin-top: 20px;
             margin-bottom:32px;
             font-size: 14px;
-            color: #EEEEEE;
+            color: #000000;
         }
 
         a {
@@ -219,47 +230,92 @@
             margin-top :70px
         }
         a.tgu-social-media-links {
-            color: #EEEEEE;
+            color: #000000;
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <?php
-    session_start();
-    if (empty($_POST['csrf_token'])) {
-        echo '<pre>'; print_r($_SESSION['csrf_token']); echo '</pre>';
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    $csrf_token = $_SESSION['csrf_token'];
+    <?php // Function to parse the string into a PHP array
+// Function to parse the string into a PHP array
+function parseStringToArray($string) {
+    // Replace "Array" with "array"
+    $string = str_replace('Array', 'array', $string);
 
-    $output = '';
-    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['csrf_token'])) {
-        	// Trim and validate input without altering serialized format
-            $input = trim($_POST['text-to-unserilize']);
+    // Quote keys (even numeric keys)
+    $string = preg_replace_callback('/\[(.*?)\] =>/', function ($matches) {
+        $key = trim($matches[1]);
+        // Always quote keys
+        return "['" . addslashes($key) . "'] =>";
+    }, $string);
 
-            // Attempt to unserialize safely
-        	$data = @unserialize($input);
-        	
-            if ($data === false && $input !== serialize(false)) {
-	            $output = 'Invalid serialized string.';
-	        } else {
-	            $output = htmlspecialchars(print_r($data, true), ENT_QUOTES, 'UTF-8');
-	        }
-        } else {
-            die('Invalid CSRF token.');
+    // Quote values (but leave numeric values unquoted)
+    $string = preg_replace_callback('/=>\s*([^,\[\]\n]+)(?=[,\)\n])/', function ($matches) {
+        $value = trim($matches[1]);
+        // Quote non-numeric values
+        if (!is_numeric($value) && !in_array(strtolower($value), ['array', 'null'], true)) {
+            $value = "'" . addslashes($value) . "'";
         }
+        return '=> ' . $value;
+    }, $string);
+
+    // Replace parentheses with square brackets for array syntax
+    $string = str_replace(['(', ')'], ['[', ']'], $string);
+
+    // Validate and include the string as PHP code
+    $code = "<?php return $string;";
+    $tempFile = tempnam(sys_get_temp_dir(), 'parse');
+    file_put_contents($tempFile, $code);
+
+    try {
+        $array = include $tempFile;
+    } catch (Throwable $e) {
+        unlink($tempFile);
+        throw new RuntimeException('Failed to parse string as array: ' . $e->getMessage());
+    }
+
+    unlink($tempFile);
+
+    return $array;
+}
+
+    // session_start();
+    if (isset($_POST) && !empty($_POST)) {
+	    if (empty($_POST['csrf_token'])) {
+	        // echo '<pre>'; print_r($_SESSION['csrf_token']); echo '</pre>';
+	        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+	    }
+	    $csrf_token = $_SESSION['csrf_token'];
+
+	    $output = '';
+	    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+	        if (isset($_POST['csrf_token'])) {
+	        	// Trim and validate input without altering serialized format
+	            $input = trim($_POST['text-to-unserilize']);
+
+	            // Attempt to unserialize safely
+	        	$data = unserialize($input);
+	        	
+	            if ($data === false && $input !== serialize(false)) {
+		            $output = 'Invalid serialized string.';
+		        } else {
+		            $output = htmlspecialchars(print_r($data, true), ENT_QUOTES, 'UTF-8');
+		        }
+	        } else {
+	            die('Invalid CSRF token.');
+	        }
+	    }
     }
     ?>
     <div class="main">
         <div class="fhs-main-container">
-            <div class="fhs-container">
+            <!-- <div class="fhs-container"> -->
                 <h1 class="fhs-heading">PHP Unserilzed Converter</h1>
                 <div class="fhs-converter">
                     <form action="" method="post" id="unserilize-form" aria-labelledby="form-title">
-                        <div>
-                            <textarea id="text-to-unserilize" class="text-to-unserilize" name="text-to-unserilize" placeholder="Paste your unserialize text here" rows="5" required aria-required="true"><?php if (!empty($_POST['text-to-unserilize'])) { echo $_POST['text-to-unserilize']; } ?></textarea>
+                        <div style="display: block; position: relative;">
+                        	<label class="" style="font-size: 16px;padding: 10px 0 5px 0;display: block;font-weight: bold;">Test your serialize array here :</label>
+                            <textarea id="text-to-unserilize" class="text-to-unserilize" name="text-to-unserilize" placeholder="Paste your serialize array here" cols="80" rows="5" required aria-required="true"><?php if (!empty($_POST['text-to-unserilize'])) { echo $_POST['text-to-unserilize']; } ?></textarea>
                         </div>
 
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
@@ -270,12 +326,14 @@
                     </form>
                     <!-- <button onclick="fhs_convertToBangla()">Convert</button> -->
                 </div>
-                <div class="fhs-result">
-                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php echo $output; ?></textarea>
-                    <button onclick="tgu_copyToClipboard()" class="fhs-copy">Copy to Clipboard</button>
-                    <button onclick="fhs_clearFields()" class="fhs-clear">× Clear</button>
-                </div>
-            </div>
+                <?php if (isset($output)) { ?>
+	                <div class="fhs-result">
+	                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php if (isset($output)) { echo parseStringToArray($output); } ?></textarea>
+	                    <button onclick="tgu_copyToClipboard()" class="fhs-copy">Copy to Clipboard</button>
+	                    <button onclick="fhs_clearFields()" class="fhs-clear">× Clear</button>
+	                </div>
+	            <?php } ?>
+            <!-- </div> -->
         </div>
     </div>
     <div class="footer">
