@@ -52,6 +52,7 @@ session_start();
             background: transparent;
             border-radius: 15px;
             color: #000000;
+            margin-top: 50px;
         }
 
         textarea.text-to-unserilize:focus, button:focus {
@@ -148,11 +149,12 @@ session_start();
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
 
         .fhs-button:hover {
             background-color: #000000;
-            color: #31363F;
+            color: red;
         }
 
         .fhs-result {
@@ -222,16 +224,19 @@ session_start();
             letter-spacing:1.4px;
             transition: 0.2s ease-in-out;
         }
-        ::selection{
+        /*::selection{
             color: #fff;
             background: #007872;
-        }
+        }*/
         hr {
             margin-top :70px
         }
         a.tgu-social-media-links {
             color: #000000;
             text-decoration: underline;
+        }
+        .result-btn {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -305,6 +310,35 @@ function parseStringToArray($string) {
 	            die('Invalid CSRF token.');
 	        }
 	    }
+
+        if (isset($output)) {
+            // $cleaned = preg_replace('/Array\s*\(/', '[', $output);
+            // echo "<pre>";
+            // print_r($cleaned);
+            // echo "</pre>";
+
+            // // Step 2: Wrap non-numeric keys in single quotes
+            // $cleaned = preg_replace_callback('/\[(.*?)\]/', function ($matches) {
+            //     $key = trim($matches[1]);
+            //     // Check if the key is numeric; if not, wrap it in double quotes
+            //     if (!is_numeric($key)) {
+            //         $key = '"' . addslashes($key) . '"';
+            //     }
+            //     return "$key";
+            // }, $cleaned);
+
+            // echo "<pre>";
+            // print_r($cleaned);
+            // echo "</pre>";
+            
+            // $cleaned = preg_replace('/\](\s*=>\s*\[|\s*\n)/', '],$1', $cleaned); // Add commas after closing brackets
+            // $cleaned = preg_replace('/\](\s*\n\s*\])/', '],$1', $cleaned); // Handle edge cases for nested arrays
+            // $cleaned = preg_replace('/\](\s*\n\s*\))/', '],$1', $cleaned);
+
+            // echo "<pre>";
+            // print_r($cleaned);
+            // echo "</pre>";
+        }
     }
     ?>
     <div class="main">
@@ -328,9 +362,9 @@ function parseStringToArray($string) {
                 </div>
                 <?php if (isset($output)) { ?>
 	                <div class="fhs-result">
-	                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php if (isset($output)) { echo parseStringToArray($output); } ?></textarea>
-	                    <button onclick="tgu_copyToClipboard()" class="fhs-copy">Copy to Clipboard</button>
-	                    <button onclick="fhs_clearFields()" class="fhs-clear">× Clear</button>
+	                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php if (isset($data)) { echo var_export($data, true); } ?></textarea>
+	                    <button onclick="tgu_copyToClipboard()" class="result-btn fhs-copy">Copy to Clipboard</button>
+	                    <button onclick="fhs_clearFields()" class="result-btn fhs-clear">× Clear</button>
 	                </div>
 	            <?php } ?>
             <!-- </div> -->
