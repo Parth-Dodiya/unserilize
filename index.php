@@ -381,7 +381,7 @@ function parseStringToArray($string) {
                 <?php if (isset($output)) { ?>
 	                <div class="tgut-result">
 	                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php if (isset($data)) { echo var_export($data, true); } ?></textarea>
-	                    <button onclick="tgut_copyToClipboard()" class="result-btn tgut-copy">Copy to Clipboard</button>
+	                    <button onclick="tgut_copyToClipboard()" class="result-btn tgut-copy" readonly>Copy to Clipboard</button>
 	                    <button onclick="tgut_clearFields()" class="result-btn tgut-clear">× Clear</button>
 	                </div>
 	            <?php } ?>
@@ -410,8 +410,9 @@ function parseStringToArray($string) {
         function tgut_copyToClipboard() {
             // Get the text field
             var copyText = document.getElementById("serilized-text");
-            // console.log(typeof(copyText));
-            if (copyText && copyText !== 'null' && copyText !== 'undefined' && copyText !== '') {
+            console.log(typeof(copyText));
+            console.log(copyText);
+            if (copyText && copyText.value.trim() !== '') {
                 // Select the text field
                 copyText.select();
                 copyText.setSelectionRange(0, 99999); // For mobile devices
@@ -421,6 +422,9 @@ function parseStringToArray($string) {
 
                 // Alert the copied text
                 alert("The text copied.");
+            } else {
+                // Alert if the textarea is empty or doesn't exist
+                alert("Please first convert, and then click copy button.");
             }
         }
 
