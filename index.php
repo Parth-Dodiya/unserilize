@@ -97,13 +97,13 @@ session_start();
         }
 }
 
-        .fhs-main-container {
+        .tgut-main-container {
             display: block;
             flex-direction: column;
             align-items: center;
         }
 
-        .fhs-container {
+        .tgut-container {
             max-width: calc(100% - 64px)!important;
             background-color: #222831;
             backdrop-filter: blur(100px);
@@ -112,27 +112,27 @@ session_start();
             box-shadow: 0px 0px 800px #31363F;
         }
 
-        .fhs-heading {
+        .tgut-heading {
             text-align: center;
             color: #000000;
             margin-bottom: 30px;
             font-size: 30px;
         }
 
-        .fhs-heading::after {
+        .tgut-heading::after {
             content: 'by the_gujarati';
             font-size: 16px;
             display:block;
             font-weight: 500;
         }
       
-        .fhs-converter {
+        .tgut-converter {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
 
-        .fhs-input {
+        .tgut-input {
             flex: 1;
             font-size: 16px;
             margin-right: 10px;
@@ -146,11 +146,11 @@ session_start();
             transition: border-color 0.3s;
         }
 
-        .fhs-input:focus {
+        .tgut-input:focus {
             border-color: #007872;
         }
 
-        .fhs-button {
+        .tgut-button {
             padding: 10px 20px;
             font-weight: bold;
             border: none;
@@ -163,16 +163,16 @@ session_start();
             margin-top: 10px;
         }
 
-        .fhs-button:hover {
+        .tgut-button:hover {
             background-color: #000000;
             color: red;
         }
 
-        .fhs-result {
+        .tgut-result {
             text-align: center;
         }
 
-        .fhs-output {
+        .tgut-output {
             font-family: "Hind Siliguri", sans-serif;
             font-size: 50px;
             margin: 50px 0;
@@ -184,7 +184,7 @@ session_start();
             padding: 10px;
             /* background: rgba(255,255,255, 0.4); */
         }
-        .fhs-copy {
+        .tgut-copy {
             background-color: #31363F;
             color: white;
             border: none;
@@ -195,13 +195,13 @@ session_start();
             transition: background-color 0.3s ease;
         }
 
-        .fhs-copy:hover {
+        .tgut-copy:hover {
             /*background-color: #000000;
             color: #31363F;*/
             opacity: 0.75;
         }
 
-        .fhs-clear {
+        .tgut-clear {
             /*opacity: 0.8;*/
             background
             opacity: 0.8;
@@ -214,7 +214,7 @@ session_start();
             transition: background-color 0.3s ease;
         }
 
-        .fhs-clear:hover {
+        .tgut-clear:hover {
             opacity: 0.75;
             /*background-color: #c92211;*/
         }
@@ -245,7 +245,7 @@ session_start();
         hr {
             margin-top :70px
         }
-        a.tgu-social-media-links {
+        a.tgut-social-media-links {
             color: #000000;
             text-decoration: underline;
         }
@@ -314,7 +314,11 @@ function parseStringToArray($string) {
 
 	            // Attempt to unserialize safely
 	        	$data = unserialize($input);
-	        	
+
+	        	if ($data === false) {
+                    $output = 'Invalid serialized string.';
+                }
+
 	            if ($data === false && $input !== serialize(false)) {
 		            $output = 'Invalid serialized string.';
 		        } else {
@@ -356,10 +360,10 @@ function parseStringToArray($string) {
     }
     ?>
     <div class="main">
-        <div class="fhs-main-container">
-            <!-- <div class="fhs-container"> -->
-                <h1 class="fhs-heading">PHP Unserilzed Converter</h1>
-                <div class="fhs-converter">
+        <div class="tgut-main-container">
+            <!-- <div class="tgut-container"> -->
+                <h1 class="tgut-heading">PHP Unserilzed Converter</h1>
+                <div class="tgut-converter">
                     <form action="" method="post" id="unserilize-form" aria-labelledby="form-title">
                         <div style="display: block; position: relative;">
                         	<label class="" style="font-size: 16px;padding: 10px 0 5px 0;display: block;font-weight: bold;">Test your serialize array here :</label>
@@ -369,16 +373,16 @@ function parseStringToArray($string) {
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
 
                         <div>
-                            <button type="submit" aria-label="Submit the form" class="fhs-button">Unserilize</button>
+                            <button type="submit" aria-label="Submit the form" class="tgut-button">Unserilize</button>
                         </div>
                     </form>
-                    <!-- <button onclick="fhs_convertToBangla()">Convert</button> -->
+                    <!-- <button onclick="tgut_convertToBangla()">Convert</button> -->
                 </div>
                 <?php if (isset($output)) { ?>
-	                <div class="fhs-result">
+	                <div class="tgut-result">
 	                    <textarea id="serilized-text" class="serilized-text" aria-label="Output of unserialized text"><?php if (isset($data)) { echo var_export($data, true); } ?></textarea>
-	                    <button onclick="tgu_copyToClipboard()" class="result-btn fhs-copy">Copy to Clipboard</button>
-	                    <button onclick="fhs_clearFields()" class="result-btn fhs-clear">× Clear</button>
+	                    <button onclick="tgut_copyToClipboard()" class="result-btn tgut-copy">Copy to Clipboard</button>
+	                    <button onclick="tgut_clearFields()" class="result-btn tgut-clear">× Clear</button>
 	                </div>
 	            <?php } ?>
             <!-- </div> -->
@@ -388,11 +392,11 @@ function parseStringToArray($string) {
         <p style="border-top: dotted 2px;"></p>
         <br>
         <b>Copyright © <?php echo date("Y"); ?> the_gujarati.</b>&nbsp;<b>Made with ❤️ in India.</b><br>
-        <a class="tgu-social-media-links" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/the_gujarati/">Instagram</a> / 
-        <a class="tgu-social-media-links" target="_blank" rel="noopener noreferrer" href="https://github.com/Parth-Dodiya">GitHub</a> / 
-        <a class="tgu-social-media-links" target="_blank" rel="noopener noreferrer" href="https://profiles.wordpress.org/dparthj/">WordPress</a> / 
-        <a class="tgu-social-media-links" target="_blank" rel="noopener noreferrer" href="https://stackoverflow.com/users/16918131/the-gujarati">stackoverflow</a> / 
-        <a class="tgu-social-media-links" target="_blank" rel="noopener noreferrer" href="https://the-gujarati.free.nf/">Website</a>
+        <a class="tgut-social-media-links" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/the_gujarati/">Instagram</a> / 
+        <a class="tgut-social-media-links" target="_blank" rel="noopener noreferrer" href="https://github.com/Parth-Dodiya">GitHub</a> / 
+        <a class="tgut-social-media-links" target="_blank" rel="noopener noreferrer" href="https://profiles.wordpress.org/dparthj/">WordPress</a> / 
+        <a class="tgut-social-media-links" target="_blank" rel="noopener noreferrer" href="https://stackoverflow.com/users/16918131/the-gujarati">stackoverflow</a> / 
+        <a class="tgut-social-media-links" target="_blank" rel="noopener noreferrer" href="https://the-gujarati.free.nf/">Website</a>
     </div>
 
     <script>
@@ -403,7 +407,7 @@ function parseStringToArray($string) {
         }
         adjustTextareaHeight(textarea);
 
-        function tgu_copyToClipboard() {
+        function tgut_copyToClipboard() {
             // Get the text field
             var copyText = document.getElementById("serilized-text");
             // console.log(typeof(copyText));
@@ -420,7 +424,7 @@ function parseStringToArray($string) {
             }
         }
 
-        function fhs_clearFields() {
+        function tgut_clearFields() {
             // var serilizedText = document.getElementById("serilized-text");
             // var textToUnserilize = document.getElementById("text-to-unserilize");
             document.getElementById("serilized-text").value = '';
