@@ -316,7 +316,7 @@ function parseStringToArray($string) {
 	        	$data = unserialize($input);
 
 	        	if ($data === false) {
-                    $output = 'Invalid serialized string.';
+                    $data = 'Invalid serialized string.';
                 }
 
 	            if ($data === false && $input !== serialize(false)) {
