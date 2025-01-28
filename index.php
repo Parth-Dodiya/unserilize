@@ -1,7 +1,7 @@
 <?php 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
+// ini_set('display_errors', '1');
+// ini_set('display_startup_errors', '1');
+// error_reporting(E_ALL);
 
 session_start();
 ?>
@@ -53,11 +53,16 @@ session_start();
             border-radius: 15px;
             color: #000000;
             margin-top: 50px;
+            width: 100%;
         }
 
         textarea.text-to-unserilize:focus, button:focus {
             outline: 2px solid #005fcc;
             outline-offset: 2px;
+        }
+
+        textarea.text-to-unserilize {
+            width: 100%;
         }
     </style>
     <style type="text/css">
@@ -79,12 +84,18 @@ session_start();
         }
 
         @media only screen and (max-width: 1023px) {
-            body { padding: 60px!important; }
+/*            body { padding: 60px!important; }*/
         }
 
         @media only screen and (max-width: 767px) {
-            body { padding: 32px!important; }
+/*            body { padding: 32px!important; }*/
         }
+
+        @media only screen and (max-width: 625px) {
+      textarea.text-to-unserilize {
+            width: 100%;
+        }
+}
 
         .fhs-main-container {
             display: block;
@@ -175,7 +186,7 @@ session_start();
         }
         .fhs-copy {
             background-color: #31363F;
-            color: #000000;
+            color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 4px;
@@ -185,15 +196,16 @@ session_start();
         }
 
         .fhs-copy:hover {
-            background-color: #000000;
-            color: #31363F;
+            /*background-color: #000000;
+            color: #31363F;*/
+            opacity: 0.75;
         }
 
         .fhs-clear {
-            opacity: 0.8;
+            /*opacity: 0.8;*/
             background
             opacity: 0.8;
-            background-color: #31363F;
+            background-color: #c92211;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -204,15 +216,17 @@ session_start();
 
         .fhs-clear:hover {
             opacity: 0.75;
-            background-color: #c92211;
+            /*background-color: #c92211;*/
         }
 
         .footer {
             text-align: center;
             margin-top: 20px;
-            margin-bottom:32px;
             font-size: 14px;
             color: #000000;
+            margin-top: auto;
+            padding: 1rem;
+            font-size: 0.9rem;
         }
 
         a {
@@ -349,7 +363,7 @@ function parseStringToArray($string) {
                     <form action="" method="post" id="unserilize-form" aria-labelledby="form-title">
                         <div style="display: block; position: relative;">
                         	<label class="" style="font-size: 16px;padding: 10px 0 5px 0;display: block;font-weight: bold;">Test your serialize array here :</label>
-                            <textarea id="text-to-unserilize" class="text-to-unserilize" name="text-to-unserilize" placeholder="Paste your serialize array here" cols="80" rows="5" required aria-required="true"><?php if (!empty($_POST['text-to-unserilize'])) { echo $_POST['text-to-unserilize']; } ?></textarea>
+                            <textarea id="text-to-unserilize" class="text-to-unserilize" name="text-to-unserilize" placeholder="Paste your serialize array here" rows="5" required aria-required="true"><?php if (!empty($_POST['text-to-unserilize'])) { echo $_POST['text-to-unserilize']; } ?></textarea>
                         </div>
 
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
@@ -392,7 +406,7 @@ function parseStringToArray($string) {
         function tgu_copyToClipboard() {
             // Get the text field
             var copyText = document.getElementById("serilized-text");
-            console.log(typeof(copyText));
+            // console.log(typeof(copyText));
             if (copyText && copyText !== 'null' && copyText !== 'undefined' && copyText !== '') {
                 // Select the text field
                 copyText.select();
@@ -404,6 +418,14 @@ function parseStringToArray($string) {
                 // Alert the copied text
                 alert("The text copied.");
             }
+        }
+
+        function fhs_clearFields() {
+            // var serilizedText = document.getElementById("serilized-text");
+            // var textToUnserilize = document.getElementById("text-to-unserilize");
+            document.getElementById("serilized-text").value = '';
+            document.getElementById("text-to-unserilize").value = '';
+
         }
     </script>
 </body>
